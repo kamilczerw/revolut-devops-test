@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{net::SocketAddr, path::PathBuf};
 
 use clap::{Parser, ValueEnum};
 use log::LevelFilter;
@@ -28,17 +28,26 @@ pub(crate) struct Cli {
     #[arg(
         short,
         long = "data-dir",
-        value_name = "DATA_DIR",
-        default_value = "./.local/data"
+        default_value = "./.local/data",
+        env = "REVOLUT_DATA_DIR"
     )]
     pub data_dir: PathBuf,
 
+    /// Address to bind the HTTP server to.
+    #[arg(
+        short = 'a',
+        long = "bind-address",
+        default_value = "[::1]:4200",
+        env = "REVOLUT_BIND_ADDRESS"
+    )]
+    pub bind_addr: SocketAddr,
+
     /// Log level.
-    #[arg(short, long, default_value = "info")]
+    #[arg(short, long, default_value = "info", env = "REVOLUT_LOG_LEVEL")]
     pub log_level: LogLevel,
 
     /// Format of the log messages.
-    #[arg(long, default_value = "text")]
+    #[arg(long, default_value = "text", env = "REVOLUT_LOG_ENCODER")]
     pub log_encoder: LogEncoder,
 }
 

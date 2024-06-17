@@ -1,13 +1,14 @@
-use surrealdb::{engine::local::SpeeDb, Surreal};
-
+mod app;
 mod setup;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let cli = setup::setup()?;
-    let db = Surreal::new::<SpeeDb>(cli.data_dir).await?;
-    db.use_ns("test").use_db("test").await?;
-    println!("Hello, world!");
+    let (cli, db) = setup::setup().await?;
+    // Setup the HTTP server.
+    let http_server = app::http_server(cli.bind_addr, db).await?;
+
+    // Wait for the HTTP server to stop.
+    http_server.await?;
 
     Ok(())
 }
