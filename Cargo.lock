@@ -2962,6 +2962,7 @@ dependencies = [
  "serde_json",
  "surrealdb",
  "tokio",
+ "tower",
 ]
 
 [[package]]

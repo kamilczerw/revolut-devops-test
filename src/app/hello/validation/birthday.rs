@@ -1,6 +1,6 @@
 use axum::{
     async_trait,
-    extract::{FromRequest, Request},
+    extract::{FromRequest, FromRequestParts, Path, Request},
     response::{IntoResponse, Response},
     Json,
 };
@@ -8,8 +8,10 @@ use regex::Regex;
 
 use crate::app::api::ApiError;
 
-use super::api::UserBirthdayRequest;
+use crate::app::hello::api::UserBirthdayRequest;
 
+/// Implement the `FromRequest` extractor for the `UserBirthdayRequest` struct.
+/// This will allow Axum to automatically deserialize the request body into a `UserBirthdayRequest` struct and validate it.
 #[async_trait]
 impl<S> FromRequest<S> for UserBirthdayRequest
 where
@@ -28,6 +30,8 @@ where
     }
 }
 
+/// Validate the `UserBirthdayRequest` struct.
+/// If the validation fails, return an `ApiError`.
 fn validate_birthday_request(req: UserBirthdayRequest) -> Result<UserBirthdayRequest, ApiError> {
     // Create a regex to validate the date format.
     let re = Regex::new(r"^\d{4}-\d{2}-\d{2}$").map_err(|err| {
