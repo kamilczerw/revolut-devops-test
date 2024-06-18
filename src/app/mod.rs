@@ -25,11 +25,13 @@ pub(crate) async fn http_server<A: ToSocketAddrs + Display>(
             put(hello::api::upsert_user).get(hello::api::get_birthday),
         )
         .route("/metrics", get(health::api::metrics))
+        .route("/health", get(health::api::health))
         .layer(ServiceBuilder::new().layer(middleware::from_fn(health::middleware::metrics)))
         .with_state(db);
 
     log::info!("Listening on {}", &bind_addr);
 
+    // TODO: Serve metrics and healthcheck on different port than the acutal api.
     let listener = tokio::net::TcpListener::bind(bind_addr)
         .await
         .context("Creating the http server listener")?;
