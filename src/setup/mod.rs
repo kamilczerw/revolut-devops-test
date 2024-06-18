@@ -1,6 +1,7 @@
 mod cli;
 mod db;
 mod logger;
+pub mod metrics;
 
 use clap::Parser;
 pub(crate) use cli::Cli;

@@ -1,11 +1,17 @@
 mod api;
+mod health;
 mod hello;
 mod store;
 
 use anyhow::{Context, Result};
-use axum::{routing::put, Router};
+use axum::{
+    middleware,
+    routing::{get, put},
+    Router,
+};
 use std::fmt::Display;
 use tokio::{net::ToSocketAddrs, task::JoinHandle};
+use tower::ServiceBuilder;
 
 pub(crate) use store::Store;
 
@@ -13,13 +19,13 @@ pub(crate) async fn http_server<A: ToSocketAddrs + Display>(
     bind_addr: A,
     db: Store,
 ) -> Result<JoinHandle<()>> {
-    // let app_state = app::AppState::new(redis_store, schema_update_channel);
-
     let app = Router::new()
         .route(
             "/hello/:username",
             put(hello::api::upsert_user).get(hello::api::get_birthday),
         )
+        .route("/metrics", get(health::api::metrics))
+        .layer(ServiceBuilder::new().layer(middleware::from_fn(health::middleware::metrics)))
         .with_state(db);
 
     log::info!("Listening on {}", &bind_addr);
