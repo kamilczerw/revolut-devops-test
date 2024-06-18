@@ -1,16 +1,17 @@
 mod api;
 mod hello;
-
-use std::fmt::Display;
+mod store;
 
 use anyhow::{Context, Result};
 use axum::{routing::put, Router};
-use surrealdb::{engine::local::Db, Surreal};
+use std::fmt::Display;
 use tokio::{net::ToSocketAddrs, task::JoinHandle};
+
+pub(crate) use store::Store;
 
 pub(crate) async fn http_server<A: ToSocketAddrs + Display>(
     bind_addr: A,
-    db: Surreal<Db>,
+    db: Store,
 ) -> Result<JoinHandle<()>> {
     // let app_state = app::AppState::new(redis_store, schema_update_channel);
 

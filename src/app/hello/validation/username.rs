@@ -1,10 +1,7 @@
-use std::fmt::Debug;
-
 use axum::{
     async_trait,
-    extract::{FromRequest, FromRequestParts, Path, Request},
+    extract::{FromRequestParts, Path},
     response::{IntoResponse, Response},
-    Json,
 };
 use regex::Regex;
 
@@ -26,7 +23,6 @@ where
         parts: &mut axum::http::request::Parts,
         state: &S,
     ) -> Result<Self, Self::Rejection> {
-        println!("Parts: {:?}", parts);
         let username = Path::<String>::from_request_parts(parts, state)
             .await
             .map_err(IntoResponse::into_response)?;
@@ -64,10 +60,12 @@ mod tests {
 
     use axum::{
         body::{to_bytes, Body},
+        extract::Request,
         http::StatusCode,
         routing::get,
         Router,
     };
+
     use tower::ServiceExt;
 
     use super::*;

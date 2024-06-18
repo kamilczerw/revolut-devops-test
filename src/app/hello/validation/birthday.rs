@@ -1,6 +1,6 @@
 use axum::{
     async_trait,
-    extract::{FromRequest, FromRequestParts, Path, Request},
+    extract::{FromRequest, Request},
     response::{IntoResponse, Response},
     Json,
 };
@@ -51,13 +51,12 @@ fn validate_birthday_request(req: UserBirthdayRequest) -> Result<UserBirthdayReq
         ApiError::bad_request("Invalid date")
     })?;
 
-    let date_earilest: chrono::NaiveDate = chrono::NaiveDate::from_ymd_opt(1900, 1, 1).unwrap();
     let today: chrono::NaiveDate = chrono::Local::now().date_naive();
 
     // Validate the date of birth.
-    if date < date_earilest || date >= today {
+    if date >= today {
         return Err(ApiError::bad_request(
-            "Invalid date of birth. The date should be between 1900-01-01 and today.",
+            "Invalid date of birth. The date should be before today.",
         ));
     }
 
@@ -106,22 +105,6 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_post_request_validation_with_invalid_dob() {
-        let request = request(r#"{ "dateOfBirth": "1899-12-31" }"#);
-        let result = UserBirthdayRequest::from_request(request, &()).await;
-        assert!(result.is_err());
-
-        if let Err(res) = result {
-            let res = get_response_error(res).await;
-            assert_eq!(res.status, 400);
-            assert_eq!(
-                res.message,
-                "Invalid date of birth. The date should be between 1900-01-01 and today."
-            );
-        }
-    }
-
-    #[tokio::test]
     async fn test_post_request_validation_with_dob_in_future() {
         let tomorrow: chrono::NaiveDate = chrono::Local::now()
             .date_naive()
@@ -139,7 +122,7 @@ mod tests {
             assert_eq!(res.status, 400);
             assert_eq!(
                 res.message,
-                "Invalid date of birth. The date should be between 1900-01-01 and today."
+                "Invalid date of birth. The date should be before today."
             );
         }
     }

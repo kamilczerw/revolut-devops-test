@@ -5,6 +5,8 @@ use axum::{
     Json,
 };
 
+pub type ApiResult<T> = Result<T, ApiError>;
+
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub(crate) struct ApiError {
     pub status: u16,
@@ -25,6 +27,10 @@ impl ApiError {
 
     pub(crate) fn internal_server_error() -> ApiError {
         ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, "Internal server error")
+    }
+
+    pub(crate) fn not_found(message: &str) -> ApiError {
+        ApiError::new(StatusCode::NOT_FOUND, message)
     }
 }
 
@@ -47,5 +53,16 @@ impl From<axum::http::Response<Body>> for ApiError {
         log::info!("res: {:?}", res);
         let message: String = format!("{:?}", res.body());
         ApiError::new(res.status().as_u16(), &message)
+    }
+}
+
+impl From<anyhow::Error> for ApiError {
+    fn from(error: anyhow::Error) -> Self {
+        log::warn!("Encountered an unhandled error: {:?}", error);
+
+        Self {
+            status: 500,
+            message: "Ups... This should have never happened. Please contact the developers about this issue.".into(),
+        }
     }
 }
