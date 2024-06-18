@@ -2953,9 +2953,11 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "axum",
+ "chrono",
  "clap",
  "log",
  "log4rs",
+ "regex",
  "serde",
  "serde_json",
  "surrealdb",
