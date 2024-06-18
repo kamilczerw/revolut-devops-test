@@ -16,4 +16,7 @@ surrealdb = { version = "1.5.3", features = ["kv-speedb", "sql2"] }
 tokio = { version = "1.38.0", features = ["rt-multi-thread", "macros"] }
 regex = "1.10.5"
 chrono = { version = "0.4.38", features = ["serde"] }
+
+[dev-dependencies]
+surrealdb = { version = "1.5.3", features = ["kv-speedb", "sql2", "kv-mem"] }
 tower = "0.4.13"

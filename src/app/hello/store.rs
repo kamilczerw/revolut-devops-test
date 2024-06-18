@@ -6,7 +6,7 @@ static BIRTHDAY_NS: &str = "birthday";
 
 #[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub(super) struct Birthday {
-    dob: NaiveDate,
+    pub dob: NaiveDate,
 }
 
 pub(super) trait BirthdayStore {

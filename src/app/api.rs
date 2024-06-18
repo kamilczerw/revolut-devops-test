@@ -44,7 +44,7 @@ impl IntoResponse for ApiError {
             .status(status)
             .header(header::CONTENT_TYPE, "application/json")
             .body(body)
-            .unwrap()
+            .expect("Failed to build response")
     }
 }
 
