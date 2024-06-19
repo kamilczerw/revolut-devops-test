@@ -213,7 +213,7 @@ The application provides the following observability features:
 This diagram shows the infrastructure to run the application on Google Cloud Platform
 using the Kubernetes Engine.
 
-![Deployment diagram](./img/gcp-diagram.svg)
+![Deployment diagram](./img/gcp-diagram.png)
 
 ## Final notes
 
