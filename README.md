@@ -44,8 +44,40 @@ cargo run
 After the application finishes compiling, it will start the http servers and can
 accept the requests. You should see the output similar to the following:
 
+<!-- markdownlint-disable MD013 -->
 ```text
-// TODO
+2024-06-19T17:21:26.693899+02:00 INFO surrealdb_core::kvs::ds: Starting kvs store at speedb://.local/data
+2024-06-19T17:21:26.719369+02:00 INFO surrealdb_core::kvs::ds: Started kvs store at speedb://.local/data
+2024-06-19T17:21:26.721120+02:00 INFO revolut_devops_test::setup::http: Listening http server on [::1]:4200
+2024-06-19T17:21:26.721285+02:00 INFO revolut_devops_test::setup::http: Listening health server on [::1]:4300
+```
+<!-- markdownlint-enable MD013 -->
+
+This means that the application has started successfully and is ready to accept
+the requests.
+
+You can now send the request to check if everything works as expected:
+
+<!-- markdownlint-disable MD013 -->
+```bash
+curl -X PUT -H "Content-Type: application/json" "http://[::1]:4200/hello/foo" -d '{"dateOfBirth": "2000-01-01"}'
+```
+<!-- markdownlint-enable MD013 -->
+
+This should not produce any output. You can check the response status code by adding
+`-v`  flag to the curl command.
+
+We can also try to call the `GET` endpoint to see if the previous request was stored
+the data correctly:
+
+```bash
+curl "http://[::1]:4200/hello/foo"
+```
+
+This should return the output similar to the following:
+
+```json
+{ "message": "Hello, foo! Your birthday is in 196 day(s)" }
 ```
 
 ### Testing
@@ -66,6 +98,16 @@ To build the docker image, run the following command:
 ```bash
 docker build -t revolut-devops-test .
 ```
+
+> [!TIP]
+> If you are building the docker image on the M1 Mac, you might need to use the
+> `--platform linux/amd64` flag to build the image for the `amd64` architecture.
+> Some of the dependencies used in the application do not support the `arm64`
+> architecture.
+>
+> ```bash
+> docker build --platform linux/amd64 -t revolut-devops-test .
+> ```
 
 Now you can run the docker container:
 
@@ -91,6 +133,29 @@ To do so, add the `REVOLUT_` prefix to the cli option name, use uppercase letter
 and replace the `-` with `_`. For example, to set the log level, you can use the
 `REVOLUT_LOG_LEVEL` environment variable.
 
+## Deployment
+
+The application provides the Helm chart to deploy the application to Kubernetes.
+
+To deploy the application, it is recommended to use automated deployment tools such
+as ArgoCD or FluxCD. For the testing purposes we can use the Helm CLI.
+
+To render the final Kubernetes manifests, run the following command:
+
+```bash
+helm template -f helm/revolut-devops-test/values.yaml revolut-test helm/revolut-devops-test
+```
+
+To deploy the application to the Kubernetes cluster, run the following command:
+
+```bash
+helm install revolut-test helm/revolut-devops-test --namespace my-test-ns --create-namespace
+```
+
+> [!NOTE]
+> The command above will most likely fail because the docker image is not available
+> in the public registry.
+
 ## Storage
 
 The application uses [SurrealDB](https://surrealdb.com/) as a storage backend. To
@@ -103,7 +168,7 @@ the storage backend automatically.
 > of the assignment. The reason for this limitation is the choice of the storage
 > backend used in the application. It is possible to tweak the code to support
 > it, but it will require running the [TiKV](https://tikv.org/) or [FundationDB](https://www.foundationdb.org/)
-> on separete instances.
+> on separate instances.
 >
 > Running the storage backend on a separate instance will require additional
 > configuration and will increase the complexity of the deployment.
@@ -141,6 +206,7 @@ The application provides the following observability features:
   - `app/` - The main application logic. This directory contains the implementation
     of the http endpoint handlers and the business logic.
 - `bin/` - The directory where all the executable files are stored.
+- `helm/` - The directory with the Helm chart to deploy the application to Kubernetes.
 
 ## Final notes
 
@@ -154,4 +220,8 @@ the final solution:
     `ghcr.io` where it can be used by the deployment pipeline.
   - The builds running on the PRs should run the tests and the linter to ensure
     the code quality. If the tests fail, the PR should be blocked from merging.
-- **Deployment** - 
+- **Deployment** - The deployment of the application should be configured in the
+  GitOps repository that handles all the deployment. For example, if the organization
+  uses ArgoCD, the `Application` resource should be created in such repository.
+- **IaC** - The infrastructure as code should be used to create necessary resources
+  in on GCP or AWS. I would chose either Terraform or OpenTofu for this task.
