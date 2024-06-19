@@ -10,6 +10,9 @@ Welcome to the Revolut DevOps Test.
 - [Docker](https://docs.docker.com/get-docker/) - The application provides a Dockerfile
   to build the application in a Docker container. You can use Docker to build and
   run the application in a container.
+- [Helm](https://helm.sh/docs/intro/install/) - The project provides a Helm
+  chart to deploy the application to Kubernetes. You need to have Helm installed
+  on your machine to render the Kubernetes manifests of deploy the application.
 
 ## Local development
 
