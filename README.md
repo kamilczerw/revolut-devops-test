@@ -208,6 +208,13 @@ The application provides the following observability features:
 - `bin/` - The directory where all the executable files are stored.
 - `helm/` - The directory with the Helm chart to deploy the application to Kubernetes.
 
+## Deployment diagram
+
+This diagram shows the infrastructure to run the application on Google Cloud Platform
+using the Kubernetes Engine.
+
+![Deployment diagram](./img/gcp-diagram.svg)
+
 ## Final notes
 
 There are a few things that I didn't have time to implement and should be part of
