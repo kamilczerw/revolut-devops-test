@@ -42,6 +42,14 @@ pub(crate) struct Cli {
     )]
     pub bind_addr: SocketAddr,
 
+    /// Address to bind the HTTP server for serving health endpoints.
+    #[arg(
+        long = "health-bind-address",
+        default_value = "[::1]:4300",
+        env = "REVOLUT_HEALTH_BIND_ADDRESS"
+    )]
+    pub health_bind_addr: SocketAddr,
+
     /// Log level.
     #[arg(short, long, default_value = "info", env = "REVOLUT_LOG_LEVEL")]
     pub log_level: LogLevel,

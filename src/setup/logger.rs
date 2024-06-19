@@ -14,9 +14,11 @@ pub(crate) fn init_logger(cli: &Cli) -> anyhow::Result<()> {
 
     let stdout = match &cli.log_encoder {
         super::cli::LogEncoder::Json => stdout_builder.encoder(Box::new(JsonEncoder::new())),
-        super::cli::LogEncoder::Text => stdout_builder.encoder(Box::new(
-            log4rs::encode::pattern::PatternEncoder::new("{d} {l} {t} - {m}{n}"),
-        )),
+        super::cli::LogEncoder::Text => {
+            stdout_builder.encoder(Box::new(log4rs::encode::pattern::PatternEncoder::new(
+                "{d} {h({l})} {t}: {m} {X(request_id)}{n}",
+            )))
+        }
     }
     .build();
 

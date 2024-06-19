@@ -90,7 +90,7 @@ pub(crate) async fn upsert_user(
     ValidatedUsername(username): ValidatedUsername,
     req: UserBirthdayRequest,
 ) -> ApiResult<UserBirthdayResponse> {
-    log::trace!(
+    log::debug!(
         "Upserting user birthday. Username: {}, dob: {}",
         &username,
         &req.date_of_birth
@@ -108,7 +108,7 @@ pub(crate) async fn get_birthday(
     State(store): State<Store>,
     ValidatedUsername(username): ValidatedUsername,
 ) -> ApiResult<Json<GetBirthdayResponse>> {
-    log::trace!("Getting birthday for user: {}", &username);
+    log::debug!("Getting birthday for user: {}", &username);
     let birthday = store.get_birthday(&username).await?;
 
     if let Some(birthday) = birthday {
