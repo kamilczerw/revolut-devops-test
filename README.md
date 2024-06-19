@@ -9,6 +9,7 @@ Welcome to the Revolut DevOps Test.
 - `-h` - Print help message summary
 - `--help` - Print more detailed help message
 - `-a | --bind-address` - The address to bind the http server to (default: `[::1]:4200`)
+- `--health-bind-address` - The address to bind the health server to (default: `[::1]:4300`)
 - `-l | --log-level` - Log level for the application (default: `info`)
 - `--log-encoder` - The format of the log output. It can be either `text` or `json`
   (default: `text`)
@@ -34,3 +35,19 @@ the storage backend automatically.
 By default, the application will store the data in the `.local/data` directory,
 relative to the application working directory. To change the storage directory,
 use the `--data-dir` cli option or the `REVOLUT_DATA_DIR` environment variable.
+
+## Observability
+
+The application provides the following observability features:
+
+- **Logging** - Logs are written to the standard output and can be formatted as
+  `text` or `json`. The default format is `text`. It is recommended to use the
+  `json` format for structured logs when running the application in the cloud
+  for better integration with the observability tools.
+- **Metrics** - The application exposes the Prometheus metrics on the `/metrics`
+  endpoint served on `4300` port by default.
+- **Tracing** - The application supports a simple MDC-based tracing mechanism.
+  The trace ID is generated for each request and can be found in the logs.
+  Additionally, the trace ID can be passed in the `X-Request-ID` header to propagate
+  the trace ID between the services.
+
