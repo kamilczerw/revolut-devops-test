@@ -79,8 +79,6 @@ pub(crate) async fn http_server<A: ToSocketAddrs + Display>(
     log::info!("Listening health server on {}", &health_bind_addr);
     let health_handle = create_server(health_bind_addr, health_app).await?;
 
-    // TODO: Write loadtests using Goose.
-
     Ok((server_handle, health_handle))
 }
 
