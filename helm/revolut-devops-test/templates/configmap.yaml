@@ -8,4 +8,6 @@ data:
   REVOLUT_LOG_LEVEL: {{ .Values.config.logLevel | quote }}
   REVOLUT_LOG_ENCODER: {{ .Values.config.logEncoder | quote }}
   REVOLUT_DATA_DIR: {{ .Values.config.dataDir | quote }}
+  REVOLUT_BIND_ADDRESS: {{ .Values.config.bindAddress | quote }}
+  REVOLUT_HEALTH_BIND_ADDRESS: {{ .Values.config.bindHealthAddress | quote }}
 

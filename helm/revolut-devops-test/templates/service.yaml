@@ -23,7 +23,7 @@ metadata:
 spec:
   type: {{ .Values.healthService.type }}
   ports:
-    - port: {{ .Values.healthService.health_port }}
+    - port: {{ .Values.healthService.port }}
       targetPort: health
       protocol: TCP
       name: health
