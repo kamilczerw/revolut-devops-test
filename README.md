@@ -152,8 +152,8 @@ helm template -f helm/revolut-devops-test/values.yaml revolut-test helm/revolut-
 We can deploy the application to the Kubernetes cluster. If you don't have a cluster
 that you can use, there is a Terraform module in the `infra/` directory that can
 be used to create the GKE cluster. The module will also create the Google Container
-Registry to store the docker images. Go to the [`infra/`](./infra/README.md)
-directory and follow the instructions there.
+Registry to store the docker images. **Go to the [`infra/`](./infra/README.md)
+directory and follow the instructions there.**
 
 Now, that you have the Kubernetes cluster ready, you can build and push the docker
 image. Run the following commands:
@@ -239,7 +239,6 @@ The application provides the following observability features:
     http server.
   - `app/` - The main application logic. This directory contains the implementation
     of the http endpoint handlers and the business logic.
-- `bin/` - The directory where all the executable files are stored.
 - `helm/` - The directory with the Helm chart to deploy the application to Kubernetes.
 - `infra/` - The directory with the infrastructure as code to deploy the application
   to GCP.
