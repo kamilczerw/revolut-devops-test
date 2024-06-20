@@ -179,10 +179,6 @@ helm install revolut-test helm/revolut-devops-test \
   -f helm/demo.local.yaml
 ```
 
-> [!NOTE]
-> The command above will most likely fail because the docker image is not available
-> in the public registry.
-
 ## Storage
 
 The application uses [SurrealDB](https://surrealdb.com/) as a storage backend. To
