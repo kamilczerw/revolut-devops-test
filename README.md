@@ -207,6 +207,13 @@ By default, the application will store the data in the `.local/data` directory,
 relative to the application working directory. To change the storage directory,
 use the `--data-dir` cli option or the `REVOLUT_DATA_DIR` environment variable.
 
+> [!IMPORTANT]
+> For the sake of the demonstration, I have ingored the fact that the storage backend
+> doesn't support running multiple instances of the application at the same time.
+> I have created the helm chart to deploy the application as if it was supported.
+> We can assume that the application synchronizes the data between the instances
+> internally.
+
 ## Observability
 
 The application provides the following observability features:
@@ -249,15 +256,19 @@ using the Kubernetes Engine.
 There are a few things that I didn't have time to implement and should be part of
 the final solution:
 
-- **Github Actions** - The repo contains the minimal github actions configuration.
-  It builds and tests the application on each push to the `main` branch or the PRs.
-  I would however extend the configuration to include the following:
-  - The builds running on `main` should produce the docker image and push it to
-    `ghcr.io` where it can be used by the deployment pipeline.
-  - The builds running on the PRs should run block the PR from merging if the tests
-    are failing.
-- **Deployment** - The deployment of the application should be configured in the
-  GitOps repository that handles all the deployment. For example, if the organization
-  uses ArgoCD, the `Application` resource should be created in such repository.
-- **IaC** - The infrastructure as code should be used to create necessary resources
-  in on GCP or AWS. I would chose either Terraform or OpenTofu for this task.
+### CI
+
+The repo contains the minimal github actions configuration.
+It builds and tests the application on each push to the `main` branch or the PRs.
+I would however extend the configuration to include the following:
+
+- The builds running on `main` should produce the docker image and push it to
+  `ghcr.io` where it can be used by the deployment pipeline.
+- The builds running on the PRs should run block the PR from merging if the tests
+  are failing.
+
+### CD
+
+For more reliable deployment, I would use ArgoCD with Argo Rollouts to ensure the
+deployment process is smooth and provides the ability to update the application
+with zero downtime and small impact on the users.

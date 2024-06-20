@@ -1,19 +1,21 @@
 # Default values for revolut-devops-test.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
-# If the application uses embedded SurrealDB as a storage backend this value
-# SHOULD NOT BE MODIFIED!
-replicaCount: 1
+replicaCount: 2
 
 config:
   logLevel: info
   logEncoder: json
   dataDir: /app/data
 
+  # The demonstration cluster doesn't support IPv6 so we need to change the address
+  # to IPv4
+  bindAddress: 0.0.0.0:4200
+  bindHealthAddress: 0.0.0.0:4300
+
 image:
   # This repository doesn't exist, it's just for demonstration purposes
-  repository: europe-west1-docker.pkg.dev/local-bebop-427012-r4/revolut-demo/test
+  # repository: gcr.io/repository/revolut-devops-test
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -36,9 +38,10 @@ serviceAccount:
 podAnnotations: {}
 podLabels: {}
 
-podSecurityContext: {}
+podSecurityContext:
+  fsGroup: 999
 
-securityContext: 
+securityContext:
   capabilities:
     drop:
     - ALL
