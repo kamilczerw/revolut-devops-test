@@ -13,7 +13,7 @@ config:
 
 image:
   # This repository doesn't exist, it's just for demonstration purposes
-  repository: ghcr.io/kamilczerw/revolut-devops-test
+  repository: europe-west1-docker.pkg.dev/local-bebop-427012-r4/revolut-demo/test
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -94,10 +94,10 @@ readinessProbe:
 persistence:
   enabled: true
   accessMode: ReadWriteOnce
-  size: 1Gi
+  size: 200Mi
 
   # Set to the storage class that is supported by your cluster
-  storageClass: ""
+  storageClass: "standard"
 
 # Additional volumes on the output Deployment definition.
 volumes: []

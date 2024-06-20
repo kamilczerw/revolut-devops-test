@@ -149,10 +149,34 @@ To render the final Kubernetes manifests, run the following command:
 helm template -f helm/revolut-devops-test/values.yaml revolut-test helm/revolut-devops-test
 ```
 
-To deploy the application to the Kubernetes cluster, run the following command:
+We can deploy the application to the Kubernetes cluster. If you don't have a cluster
+that you can use, there is a Terraform module in the `infra/` directory that can
+be used to create the GKE cluster. The module will also create the Google Container
+Registry to store the docker images. Go to the [`infra/`](./infra/README.md)
+directory and follow the instructions there.
+
+Now, that you have the Kubernetes cluster ready, you can build and push the docker
+image. Run the following commands:
 
 ```bash
-helm install revolut-test helm/revolut-devops-test --namespace my-test-ns --create-namespace
+export VERSION=v0.1.0
+export IMAGE="$REGISTRY/revolut-devops-test"
+docker build -t "$IMAGE:$VERSION" .
+docker push "$IMAGE:$VERSION"
+
+echo "image:
+  repository: $IMAGE
+  tag: $VERSION" > helm/demo.local.yaml
+```
+
+Now, you can deploy the application to the Kubernetes cluster. Run the following
+command:
+
+```bash
+helm install revolut-test helm/revolut-devops-test \
+  --namespace revolut-demo \
+  --create-namespace \
+  -f helm/demo.local.yaml
 ```
 
 > [!NOTE]
@@ -210,26 +234,28 @@ The application provides the following observability features:
     of the http endpoint handlers and the business logic.
 - `bin/` - The directory where all the executable files are stored.
 - `helm/` - The directory with the Helm chart to deploy the application to Kubernetes.
+- `infra/` - The directory with the infrastructure as code to deploy the application
+  to GCP.
 
-## Deployment diagram
+## System diagram
 
 This diagram shows the infrastructure to run the application on Google Cloud Platform
 using the Kubernetes Engine.
 
-![Deployment diagram](./img/gcp-diagram.png)
+![System diagram](./img/gcp-diagram.png)
 
 ## Final notes
 
 There are a few things that I didn't have time to implement and should be part of
 the final solution:
 
-- **Github Actions** - The repo should contain the `.github/workflows` directory
-  with the GitHub Actions workflows to build and test the application on each push
-  to the repository.
+- **Github Actions** - The repo contains the minimal github actions configuration.
+  It builds and tests the application on each push to the `main` branch or the PRs.
+  I would however extend the configuration to include the following:
   - The builds running on `main` should produce the docker image and push it to
     `ghcr.io` where it can be used by the deployment pipeline.
-  - The builds running on the PRs should run the tests and the linter to ensure
-    the code quality. If the tests fail, the PR should be blocked from merging.
+  - The builds running on the PRs should run block the PR from merging if the tests
+    are failing.
 - **Deployment** - The deployment of the application should be configured in the
   GitOps repository that handles all the deployment. For example, if the organization
   uses ArgoCD, the `Application` resource should be created in such repository.

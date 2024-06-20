@@ -1,1 +1,8 @@
 /target
+
+# Sometimes it's useful to crate temporary files inside the repository
+# All the files that contains .local. in the name and .local/ directories
+# will be ignored
+*.local.*
+*.local/
+
