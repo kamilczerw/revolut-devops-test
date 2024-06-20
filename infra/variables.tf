@@ -1,6 +1,6 @@
 variable "project_id" {
   type        = string
-  description = "The GCP project ID"
+  description = "The GCP project ID. The project ID can be fetched by running `gcloud projects list`"
 }
 
 variable "region" {

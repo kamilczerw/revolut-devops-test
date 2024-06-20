@@ -11,6 +11,7 @@ resource "google_container_cluster" "gke" {
   name     = var.cluster_name
   location = var.region
 
+  # We can use the autopilot to manage the cluster so we don't have to worry about it too much.
   enable_autopilot = true
 
   # VPC_NATIVE enables ip aliasing which is required when useing autopilot
@@ -25,28 +26,4 @@ resource "google_container_cluster" "gke" {
 
     disk_size_gb = var.node_disk_size
   }
-
-  # remove_default_node_pool = true
-  # initial_node_count       = 1
 }
-
-# Define a Google Kubernetes Engine (GKE) node pool
-# resource "google_container_node_pool" "primary_preemptible_nodes" {
-#   name       = "${var.cluster_name}-node-pool"
-#   location   = var.region
-#   cluster    = google_container_cluster.primary.name
-#   node_count = var.node_count
-#
-#   node_config {
-#     preemptible  = true
-#     machine_type = var.machine_type
-#
-#     disk_size_gb = var.node_disk_size
-#
-#     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-#     service_account = google_service_account.default.email
-#     oauth_scopes = [
-#       "https://www.googleapis.com/auth/cloud-platform"
-#     ]
-#   }
-# }

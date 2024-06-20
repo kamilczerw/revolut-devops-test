@@ -1,7 +1,7 @@
 # Infrastructure
 
 Here you can find all the necessary information related to the provisioning of the
-infrastructure to run the application on Google Cloud Platform using the Kubernetes.
+infrastructure to run the application on Google Cloud Platform using Kubernetes.
 
 ## Requirements
 
@@ -14,12 +14,12 @@ infrastructure to run the application on Google Cloud Platform using the Kuberne
 
 ## Initial setup
 
-Once you have the `gcloud` and `terraform` installed, need to create a new project
+Once you have the `gcloud` and `terraform` installed, you need to create a new project
 on Google Cloud Platform. Copy the project ID and put it in the `local.auto.tfvars`
-in the `infra` folder.
+in the `infra/` folder.
 
 You will also need to have the `gke-cloud-auth-plugin` to interact with the Kubernetes
-cluster. You can install it using the following command:
+cluster. To install it run the following command:
 
 ```bash
 gcloud components install gke-gcloud-auth-plugin
@@ -34,27 +34,27 @@ export PROJECT_ID="your-project-id"
 echo "project_id = \"$PROJECT_ID\"" > ./local.auto.tfvars
 ```
 
-Now, authenticate the `gcloud` CLI with your Google Cloud Platform account.
+Now, authenticate the `gcloud` CLI with your Google Cloud Platform account
 
 ```bash
 gcloud auth login
 ```
 
-And set the project ID to the one you created earlier.
+And set the project ID to the one you created earlier
 
 ```bash
 gcloud config set project "$PROJECT_ID"
 gcloud config set compute/region "europe-west1"
 ```
 
-> [!NOTE]
-> You need to make sure that all the apis are enabled for the project. You can enable
-> them using the following command:
+> [!IMPORTANT]
+> Make sure that all the APIs are enabled for the project. You can enable them using
+> the following command:
 >
 > ```bash
 >  gcloud services enable \
->   container.googleapis.com \
->   containerregistry.googleapis.com
+>    container.googleapis.com \
+>    containerregistry.googleapis.com
 > ```
 
 Now, that you have everything setup, you can provision the infrastructure using the

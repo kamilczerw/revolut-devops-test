@@ -14,6 +14,24 @@ Welcome to the Revolut DevOps Test.
   chart to deploy the application to Kubernetes. You need to have Helm installed
   on your machine to render the Kubernetes manifests of deploy the application.
 
+## Configuration
+
+**CLI options**:
+
+- `-h` - Print help message summary
+- `--help` - Print more detailed help message
+- `-a | --bind-address` - The address to bind the http server to (default: `[::1]:4200`)
+- `--health-bind-address` - The address to bind the health server to (default: `[::1]:4300`)
+- `-l | --log-level` - Log level for the application (default: `info`)
+- `--log-encoder` - The format of the log output. It can be either `text` or `json`
+  (default: `text`)
+- `-d | --data-dir` - The directory to store the data (default: `.local/data`)
+
+It is also possible to configure the application using the environment variables.
+To do so, add the `REVOLUT_` prefix to the cli option name, use uppercase letters
+and replace the `-` with `_`. For example, to set the log level, you can use the
+`REVOLUT_LOG_LEVEL` environment variable.
+
 ## Local development
 
 ### Building
@@ -35,17 +53,24 @@ cargo build --release
 
 The produced executable can be found at `./target/release/revolut-devops-test`.
 
+> [!TIP]
+> The `release` mode will optimize the binary for the performance. It is recommended
+> to use the `release` mode for the production builds.
+>
+> Building the application in the `release` mode takes longer than building in the
+> `debug` mode.
+
 ### Running
 
 It is not required to build the project before running the application. You can
-run the following command to build and run the applciation:
+just run
 
 ```bash
 cargo run
 ```
 
-After the application finishes compiling, it will start the http servers and can
-accept the requests. You should see the output similar to the following:
+It will build the application and then run it in the `debug` mode You should see
+the output similar to the following:
 
 <!-- markdownlint-disable MD013 -->
 ```text
@@ -68,10 +93,10 @@ curl -X PUT -H "Content-Type: application/json" "http://[::1]:4200/hello/foo" -d
 <!-- markdownlint-enable MD013 -->
 
 This should not produce any output. You can check the response status code by adding
-`-v`  flag to the curl command.
+`-v`  flag to the `curl` command.
 
-We can also try to call the `GET` endpoint to see if the previous request was stored
-the data correctly:
+We can also send the `GET` request to see if the previous request set
+the user birthday correctly:
 
 ```bash
 curl "http://[::1]:4200/hello/foo"
@@ -103,10 +128,8 @@ docker build -t revolut-devops-test .
 ```
 
 > [!TIP]
-> If you are building the docker image on the M1 Mac, you might need to use the
-> `--platform linux/amd64` flag to build the image for the `amd64` architecture.
-> Some of the dependencies used in the application do not support the `arm64`
-> architecture.
+> If you encounter any issues with building the docker image on the M* Mac, you can
+> use the `--platform linux/amd64` flag to build the image for the `amd64` architecture.
 >
 > ```bash
 > docker build --platform linux/amd64 -t revolut-devops-test .
@@ -118,27 +141,10 @@ Now you can run the docker container:
 docker run -p 4200:4200 -p 4300:4300 revolut-devops-test
 ```
 
-## Configuration
-
-**Cli options**:
-
-- `-h` - Print help message summary
-- `--help` - Print more detailed help message
-- `-a | --bind-address` - The address to bind the http server to (default: `[::1]:4200`)
-- `--health-bind-address` - The address to bind the health server to (default: `[::1]:4300`)
-- `-l | --log-level` - Log level for the application (default: `info`)
-- `--log-encoder` - The format of the log output. It can be either `text` or `json`
-  (default: `text`)
-- `-d | --data-dir` - The directory to store the data (default: `.local/data`)
-
-It is also possible to configure the application using the environment variables.
-To do so, add the `REVOLUT_` prefix to the cli option name, use uppercase letters
-and replace the `-` with `_`. For example, to set the log level, you can use the
-`REVOLUT_LOG_LEVEL` environment variable.
-
 ## Deployment
 
-The application provides the Helm chart to deploy the application to Kubernetes.
+This project can be deployed to Kubernetes using Helm. The Helm chart can be found
+in the `helm/revolut-devops-test` directory.
 
 To deploy the application, it is recommended to use automated deployment tools such
 as ArgoCD or FluxCD. For the testing purposes we can use the Helm CLI.
@@ -149,18 +155,21 @@ To render the final Kubernetes manifests, run the following command:
 helm template -f helm/revolut-devops-test/values.yaml revolut-test helm/revolut-devops-test
 ```
 
-We can deploy the application to the Kubernetes cluster. If you don't have a cluster
-that you can use, there is a Terraform module in the `infra/` directory that can
-be used to create the GKE cluster. The module will also create the Google Container
-Registry to store the docker images. **Go to the [`infra/`](./infra/README.md)
-directory and follow the instructions there.**
+Let's try to deploy the application to the Kubernetes cluster. If you don't have
+a cluster that you can use, there is a Terraform module in the `infra/` directory
+that can be used to create the GKE cluster. The module will also create the Google
+Container Registry to store the docker images.
+
+**Go to the [`infra/README.md`](./infra/README.md) directory and follow the instructions
+there.**
 
 Now, that you have the Kubernetes cluster ready, you can build and push the docker
 image. Run the following commands:
 
 ```bash
-export VERSION=v0.1.0
+# The REGISTRY environment variable should be set in the infra setup step
 export IMAGE="$REGISTRY/revolut-devops-test"
+export VERSION=v0.1.0
 docker build -t "$IMAGE:$VERSION" .
 docker push "$IMAGE:$VERSION"
 
@@ -203,7 +212,7 @@ By default, the application will store the data in the `.local/data` directory,
 relative to the application working directory. To change the storage directory,
 use the `--data-dir` cli option or the `REVOLUT_DATA_DIR` environment variable.
 
-> [!IMPORTANT]
+> [!NOTE]
 > For the sake of the demonstration, I have ingored the fact that the storage backend
 > doesn't support running multiple instances of the application at the same time.
 > I have created the helm chart to deploy the application as if it was supported.
